@@ -1,0 +1,18 @@
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+Old model
+\begin{align}
+\nonumber p(\beta_j)=&\mathcal{N}(0,\sigma_{w}^2)\pi^{s_j}(1-\pi)^{1-s_j}\\
+\nonumber p(y_n)=&\mathcal{N}\left(\sum_{j=1}^{J}s_j\beta_jx_{nj},\sigma^2\right)
+\end{align}
+My model is to cluster on $s_j$, the selectors that choose the relevant feature.
+\begin{align}
+p(s_j^{(k)})=&\pi^{s_j^{(k)}}(1-\pi)^{1-s_j^{(k)}}\\
+p(\beta_j^{(k)})=&\mathcal{N}(0,\sigma_{\beta}^2)\\
+v_k=& Be(1,\alpha)\\
+p(z_n=k)=& v_k\prod_{i=1}^{k-1}(1-v_i)\\
+p(y_n)=&\prod_{i=1}^{K}\mathcal{N}(\sum_{j=1}^{J}s_j\beta_jx_{nj},\sigma^2)^{1(z_n=k)}
+\end{align}
+where $k=1,\cdots,K$ are the cluster assignments, $j=1,\cdots,J$ is the features/ dimensions and $n$ are the observations.
+\end{document}
