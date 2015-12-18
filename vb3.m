@@ -1,4 +1,4 @@
-function [muw, sigma2qw, Es, sigma2q, F]=vb3(y,X, sigma2q, iter)
+function [muw, sigma2qw, Es, sigma2q, F]=vb3(y,X, iter)
 
 [N,M]=size(X);
 % Ew=X\y;
@@ -7,14 +7,14 @@ function [muw, sigma2qw, Es, sigma2q, F]=vb3(y,X, sigma2q, iter)
 
 % sigma2q=var(y-X*w1);
 
-Es = 0.5*ones(M,1) + 0.001*randn(M,1); 
+Es = 0.5*ones(M,1) + randn(M,1); 
 Es(Es<=0.2)=0.2;
 Es(Es>=0.8)=0.8;
 % INITIALIZE FACTOR q(w_m | s_m =1) = N(w_m| muW_m,  sigma2_wm)
 muw = 0.1*randn(M,1); 
 
-sigma2w=2;
-    
+sigma2w=100;
+sigma2q=var(y-X*(Es.*muw));    
 % iter=10000;
 pi=0.5;
 F=zeros(iter,1);
@@ -47,27 +47,6 @@ for i=1:iter
 end
 % figure; plot(F);
 F=lnlb(y, X, Es,muw, sigma2qw, sigma2w, sigma2q, pi);
-    
-function Es=qs(y, X, Es, Ew, sigma2w, sigma2q,pi)
-Esw=Es.*Ew;
-XEsw=bsxfun(@times,X,Esw');
-XEsw=bsxfun(@minus,sum(XEsw,2),XEsw);
-error_m=bsxfun(@minus,y,XEsw);
-s_ratio=sigma2q/sigma2w;
-proj_x=sum(X.^2)'+s_ratio;
-u=log(pi/(1-pi))+0.5*(log(s_ratio)-log(proj_x)...
-    +sum(X.*error_m)'.^2)./(sigma2q*proj_x);
-Es=1./(1+exp(-u));
-
-function [muw, sigma2w]=qw(y, X, Es, Ew, sigma2w, sigma2q)
-Esw=Es.*Ew;
-XEsw=bsxfun(@times,X,Esw');
-XEsw=bsxfun(@minus,sum(XEsw,2),XEsw);
-error_m=bsxfun(@minus,y,XEsw);
-s_ratio=sigma2q/sigma2w;
-proj_x=sum(X.^2)'+s_ratio;
-muw=sum(X.*error_m)'./proj_x;
-sigma2w=sigma2q./proj_x;
 
 function sigma2w=m_sigma2w(muw,sigma2qw,Es)
 sigma2w=sum(Es.*(muw.^2+sigma2qw))/sum(Es);
