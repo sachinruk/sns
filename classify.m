@@ -59,8 +59,7 @@ pi=mean(Es(:));
 function [Ey]=qy(z,mu)
 C=sqrt(2*pi)*normcdf(-mu);
 C(z==1)=sqrt(2*pi)-C(z==1);
-Ey=mu;
-Ey=Ey+(2*z-1).*exp(-0.5*mu.^2)./C;
+Ey=mu+(2*z-1).*exp(-0.5*mu.^2)./C;
 
 % function 1=m_sigma2q(yTy, XTX, XTy, Es,muw, sigma2qw,N)
 % Esw=Es.*muw;

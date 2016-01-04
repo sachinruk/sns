@@ -44,7 +44,7 @@ XtXminusDiag = model.Likelihood.XtXminusDiag;
 
 Fold = -Inf;
 FF=zeros(iters,1);
-lnL=FF;
+% lnL=FF;
 % start variational EM
 model.Likelihood.sigma2=0.01;
 for it=1:iters
@@ -120,7 +120,7 @@ for it=1:iters
     
     % Update sigma2w (prior varaince over weights)
     model.prior.sigma2W = sum(sum(SW2_sigma ))./sum( vardist.gamma(:) );
-    lnL(it)=slrLowerBound(model, vardist);
+%     lnL(it)=slrLowerBound(model, vardist);
     if debug==1
          F = slrLowerBound(model, vardist);
          if (F-Fold) < 0 
@@ -145,7 +145,7 @@ for it=1:iters
     FF(it) = Fold; 
 %    
 end
-figure; plot(lnL);    
+% figure; plot(lnL);    
 if ~dispF
     FF = [];
 end

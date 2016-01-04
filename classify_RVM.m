@@ -1,6 +1,7 @@
 function [mu,Sigma,A]=classify_RVM(z,X,iter)
 
-sigma2=0.5; lambda=1e-9; c=1e-9; d=1e-9;
+sigma2=0.5; 
+% lambda=1e-9; c=1e-9; d=1e-9;
 [~,D]=size(X);
 Phi2=X'*X;
 A=ones(D,1); 
@@ -9,15 +10,16 @@ mu=X\z+0.5*randn(D,1);
 for i=1:iter
     [Ey]=qy(z,X*mu);
     [Sigma, mu]=weightEst(Ey,X,sigma2,A);
-    A=alphaEst(Sigma,mu,lambda);
-    sigma2=Esigma(Ey,X,mu,Sigma,Phi2, c,d,D);
+    A=alphaEst(Sigma,mu);
+    sigma2=Esigma(Ey,X,mu,Sigma,Phi2,D);
     
 end
 
-function sigma2=Esigma(y,X,mu,Sigma,Phi2, c,d,n)
-a=c+n/2;
+function sigma2=Esigma(y,X,mu,Sigma,Phi2, n)
+delta=1e-9;
+a=delta+n/2;
 PhiTPhiSigma=Phi2.*Sigma;
-b=0.5*(norm(y-X*mu)+sum(PhiTPhiSigma(:))+2*d);
+b=0.5*(norm(y-X*mu)+sum(PhiTPhiSigma(:))+2*delta);
 
 sigma2=b/a;
 
@@ -32,8 +34,9 @@ L=chol(SigmaInv,'lower');
 mu=L'\(L\(Phi'*y));
 
 
-function A=alphaEst(Sigma,mu,lambda)
-A=3./(diag(Sigma)+mu.^2+lambda);
+function A=alphaEst(Sigma,mu)
+delta=2e-9;
+A=(delta+1)./(diag(Sigma)+mu.^2+delta);
 
 function [Ey]=qy(z,mu)
 C=sqrt(2*pi)*normcdf(-mu);

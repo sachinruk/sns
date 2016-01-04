@@ -4,7 +4,7 @@ clc
 
 rng(1);
 pi=[0.2 0.8];
-N=40; d=100; %20 observations and 100 dimensions
+N=50; d=100; %20 observations and 100 dimensions
 X=randn(N,d);
 s=mnrnd(1,pi,d);
 w=randn(d,1).*s(:,1);
@@ -24,7 +24,7 @@ norm(w-muw.*(Es>0.5))
 % norm(w-X\y)
 
 % 
-[muw2]=vbRVM(y,X,100);
+[muw2]=RVMregress(y,X,100);
 norm(w-muw2)
 figure; plot(w);
 hold on; plot(muw2,'m')
