@@ -1,4 +1,4 @@
-function [muw, sigma2qw, Es]=classify(z,X, iter)
+function [muw, sigma2qw, Es]=SnSclassify(z,X, iter)
 
 [N,M]=size(X);
 % Ew=X\Ey;

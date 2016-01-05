@@ -14,7 +14,7 @@ z=ones(size(y));
 z(y<0)=0;
 
 iter=300;
-[muw, sigma2qw, Es]=classify(z,X, iter);
+[muw, sigma2qw, Es]=SnSclassify(z,X, iter);
 muw2=RVMclassification(z,X, iter);
 muw3=ProbitClassification(z,X, iter);
 % [muw2,Sigma,A]=classify_RVM(z,X,iter);

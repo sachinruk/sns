@@ -1,18 +1,50 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{bm}
+\usepackage{mathtools}
+
+\input{eqn_abbr}
 \begin{document}
+
+\section{Model}
 Old model
 \begin{align}
 \nonumber p(\beta_j)=&\mathcal{N}(0,\sigma_{w}^2)\pi^{s_j}(1-\pi)^{1-s_j}\\
 \nonumber p(y_n)=&\mathcal{N}\left(\sum_{j=1}^{J}s_j\beta_jx_{nj},\sigma^2\right)
 \end{align}
-My model is to cluster on $s_j$, the selectors that choose the relevant feature.
+Let the data be the set $\{\{\cy_1,\cX_1\},\{\cy_2,\cX_2\},\cdots,\{\cy_N,\cX_N\}\}$
+My model is to cluster on $\cs$, the selector vector that choose the relevant feature.
 \begin{align}
-p(s_j^{(k)})=&\pi^{s_j^{(k)}}(1-\pi)^{1-s_j^{(k)}}\\
-p(\beta_j^{(k)})=&\mathcal{N}(0,\sigma_{\beta}^2)\\
+p\left(s_j^{(k)}\right)=&\pi^{s_j^{(k)}}(1-\pi)^{1-s_j^{(k)}}\\
 v_k=& Be(1,\alpha)\\
 p(z_n=k)=& v_k\prod_{i=1}^{k-1}(1-v_i)\\
-p(y_n)=&\prod_{i=1}^{K}\mathcal{N}(\sum_{j=1}^{J}s_j\beta_jx_{nj},\sigma^2)^{1(z_n=k)}
+p(\cbeta_n)=&\mathcal{N}(0,\sigma_{\beta}^2\cI)\\
+p(\cy_n)=&\prod_{k=1}^{K}\mathcal{N}\left(\cX_n(\cbeta_n\circ\cs^{(k)}),\sigma^2\right)^{1(z_n=k)}
 \end{align}
-where $k=1,\cdots,K$ are the cluster assignments, $j=1,\cdots,J$ is the features/ dimensions and $n$ are the observations.
+where $\circ$ is the Hadamaard product, $k=1,\cdots,K$ are the cluster assignments, $j=1,\cdots,J$ are the features/ dimensions and $n$ are the observations.
+
+\section{Inference}
+Let us approximate the posterior as $\prod_{k=1}^{K}\prod_{n=1}^{N}\clrbracket{q(\cbeta_{nj}|\cs_j^{(k)})q\clrbracket{\cs^{(k)}}}q(z_n=k)\prod_{k=1}^{K}q(v_k)$.
+
+Denoting $\cX_{nm}$ as the $m$-th column of the $n$-th input, $\cX_n$ we obtain,
+\begin{align}
+\nonumber \log q\left(\cbeta_{nj}|\cs_j^{(k)}\right)\propto &-\chalf{\css}\pi_{nk}\norm{\cy_n-\sum_{m\ne j}\cbeta_{nm}s_m^{(k)}\cX_{nm}-\cbeta_{nj}s_j^{(k)}\cX_{nj}}_2^2-\chalf{\sigma_\beta^2}\cbeta_{nj}^2\\
+\nonumber \propto &-\chalf{}\cbeta_{nj}^2\clrbracket{\frac{1}{\sigma_\beta^2}+\frac{\pi_{nk}}{\css}s_j^{(k)}\norm{\cX_{nj}}_2^2}+\frac{\pi_{nk}}{\css}\cX_{nj}^T\cerr_{nj}^{(k)}\cs_j^{(k)}\cbeta_{nj}
+\end{align}
+where $\cerr_{nj}^{(k)}\coloneqq\cy_n-\sum_{m\ne j}\clrangle{\cbeta_{nm}\cs_m^{(k)}}\cX_{nm}$. Therefore, $q\left(\cbeta_{nj}|\cs_j^{(k)}\right)=\cN(\mu_{nj},\sigma_{nj}^2)$ where $\css_{nj}=\clrbracket{\frac{1}{\sigma_\beta^2}+\frac{\pi_{nk}}{\css}s_j^{(k)}\norm{\cX_{nj}}_2^2}^{-1}$ and $\mu_{nj}=\css_{nj}\frac{\pi_{nk}}{\css}\cX_{nj}^T\cerr_{nj}^{(k)}\cs_j^{(k)}$.
+
+The approximate posterior on the selector variables are as follows:
+\begin{align}
+\nonumber \log q(\cs_j^{(k)})\propto &\chalf{}\csumn\clrbracket{\log\css_{nj}+\frac{\mu_{nj}^2}{\css_{nj}}}+\cs_j^{(k)}\log\pi+\clrbracket{1-\cs_j^{(k)}}\log(1-\pi)\\
+\nonumber \log q(\cs_j^{(k)}=1)\propto & \chalf{}\csumn \clrbracket{\frac{\clrbracket{\frac{\pi_{nk}}{\css}\cX_{nj}^T\cerr_{nj}^{(k)}\cs_j^{(k)}}^2}{\frac{1}{\sigma_\beta^2}+\frac{\pi_{nk}}{\css}\norm{\cX_{nj}}_2^2}-\log\clrbracket{\frac{1}{\sigma_\beta^2}+\frac{\pi_{nk}}{\css}\norm{\cX_{nj}}_2^2}}+\log\pi\\
+\nonumber \log q(\cs_j^{(k)}=0)\propto & -\chalf{}\csumn\log\frac{1}{\css_\beta}+\log(1-\pi)
+\end{align}
+\begin{align}
+\nonumber \log q(\cs_j^{(k)}=1)-\log q(\cs_j^{(k)}=0)\propto & \chalf{}\csumn \clrbracket{\frac{\clrbracket{\frac{\pi_{nk}}{\css}\cX_{nj}^T\cerr_{nj}^{(k)}\cs_j^{(k)}}^2}{\frac{1}{\sigma_\beta^2}+\frac{\pi_{nk}}{\css}\norm{\cX_{nj}}_2^2}-\log\clrbracket{1+\frac{\pi_{nk}\sigma_\beta^2}{\css}\norm{\cX_{nj}}_2^2}}\\
+\nonumber &+\log\frac{\pi}{1-\pi}
+\end{align}
+The posterior probability that $q\clrbracket{s_j^{(k)}=1}=\frac{1}{1+\exp(-u_{jk})}$ where, $u_{jk}= \log q(\cs_j^{(k)}=1)-\log q(\cs_j^{(k)}=0)$.
+
+
+
 \end{document}
